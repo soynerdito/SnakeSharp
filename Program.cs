@@ -28,12 +28,9 @@ namespace ConsoleApplication
                 _CurrentDirection = value;
             }
         }
-        public int UserSpeed { get; set; }
-        System.Threading.Timer Timer;
         private PlayerDirection _CurrentDirection = PlayerDirection.NONE;
         public List<Point> SnakeBody { get; set; } = new List<Point>();
         private Stack<Point> ErasePos { get; set; }
-
         public int Width { get; private set; }
         public int Height { get; private set; }
         public int LasTimeMoved { get; private set; } = 0;
