@@ -11,20 +11,24 @@ namespace ConsoleApplication
     public class GameBoard
     {
         private Object _lock = new Object();
-        
-        public PlayerDirection CurrentDirection { get
+
+        public PlayerDirection CurrentDirection
         {
-            return _CurrentDirection;
-        } set
-        {
-            if( value == _CurrentDirection && this.PlayerSpeed > 25){
-                //Speed Up
-                this.PlayerSpeed -= 25;
-                _StartPlayerTimer();
+            get
+            {
+                return _CurrentDirection;
             }
-            _CurrentDirection = value;
+            set
+            {
+                if (value == _CurrentDirection && this.PlayerSpeed > 25)
+                {
+                    //Speed Up
+                    this.PlayerSpeed -= 25;
+                    //_StartPlayerTimer();
+                }
+                _CurrentDirection = value;
+            }
         }
-         } 
         public int UserSpeed { get; set; }
         System.Threading.Timer Timer;
         private PlayerDirection _CurrentDirection = PlayerDirection.NONE;
@@ -35,6 +39,7 @@ namespace ConsoleApplication
 
         public int Width { get; private set; }
         public int Height { get; private set; }
+        public int LasTimeMoved { get; private set; } = 0;
 
         public Point GetSnakeHead()
         {
@@ -55,25 +60,13 @@ namespace ConsoleApplication
         int PlayerSpeed;
         public void StartPlayer(int userSpeedMS = 250)
         {
-            
+
             SnakeBody = new List<Point>();
             SnakeBody.Add(new Point() { X = 4, Y = 4 });
-            SnakeBody.Add(new Point() { X = 5, Y = 4 });
-            SnakeBody.Add(new Point() { X = 6, Y = 4 });
-            
+            SnakeBody.Add(new Point() { X = 4, Y = 4 });
+
             PlayerSpeed = userSpeedMS;
-            _StartPlayerTimer();
         }
-
-        private void _StartPlayerTimer(){
-            if (Timer != null)
-            {
-                Timer.Dispose();
-                Timer = null;
-            }
-            Timer = new System.Threading.Timer(PlayerTimerCallback, null, 0, PlayerSpeed);
-        }
-
         private void MoveSnake(PlayerDirection direction, bool grow = false)
         {
             lock (_lock)
@@ -106,15 +99,16 @@ namespace ConsoleApplication
                 }
             }
         }
-        private void PlayerTimerCallback(object state)
-        {
-            MoveSnake(CurrentDirection, SnakeBody.Count < 50);
-        }
 
         public void OnDraw()
         {
             lock (_lock)
-            {
+            {      
+                if( (Environment.TickCount - LasTimeMoved) > PlayerSpeed ){
+                    MoveSnake(CurrentDirection, SnakeBody.Count < 50);
+                    LasTimeMoved = Environment.TickCount;
+                }
+
                 while (ErasePos.Count > 0)
                 {
                     ClearPos(ErasePos.Pop());
@@ -122,7 +116,7 @@ namespace ConsoleApplication
                 foreach (var dot in SnakeBody)
                 {
                     Console.SetCursorPosition(dot.X, dot.Y);
-                    Console.Write('x');
+                    Console.Write('*' );
                 }
             }
         }
@@ -140,12 +134,15 @@ namespace ConsoleApplication
 
         internal void OnKeyPress(ConsoleKeyInfo keyInfo)
         {
-            switch (keyInfo.Key)
+            lock (_lock)
             {
-                case ConsoleKey.UpArrow: { CurrentDirection = PlayerDirection.UP; } break;
-                case ConsoleKey.DownArrow: { CurrentDirection = PlayerDirection.DOWN; } break;
-                case ConsoleKey.LeftArrow: { CurrentDirection = PlayerDirection.LEFT; } break;
-                case ConsoleKey.RightArrow: { CurrentDirection = PlayerDirection.RIGHT; } break;
+                switch (keyInfo.Key)
+                {
+                    case ConsoleKey.UpArrow: { CurrentDirection = PlayerDirection.UP; } break;
+                    case ConsoleKey.DownArrow: { CurrentDirection = PlayerDirection.DOWN; } break;
+                    case ConsoleKey.LeftArrow: { CurrentDirection = PlayerDirection.LEFT; } break;
+                    case ConsoleKey.RightArrow: { CurrentDirection = PlayerDirection.RIGHT; } break;
+                }
             }
         }
 
@@ -154,13 +151,11 @@ namespace ConsoleApplication
             if ((point.X + xOffset) >= 0
                 && (point.X + xOffset) < Width)
             {
-                //this.ErasePos.Push(point.Clone());
                 point.X += xOffset;
             }
             if ((point.Y + yOffset) >= 0
                 && (point.Y + yOffset) < Height)
             {
-                //this.ErasePos.Push(point.Clone());
                 point.Y += yOffset;
             }
             return point;
@@ -179,12 +174,12 @@ namespace ConsoleApplication
             Console.Clear();
             while (gameLoop.Active)
             {
-                keyInfo = Console.ReadKey();
+                keyInfo = Console.ReadKey(true);
                 if (keyInfo.Key == ConsoleKey.Escape)
                 {
                     gameLoop.Stop();
                     break;
-                }
+                }                
                 gameBoad.OnKeyPress(keyInfo);
             }
             Console.CursorVisible = true;

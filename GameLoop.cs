@@ -7,27 +7,23 @@ namespace ConsoleApplication
     {
         private Thread _Thread;
         private bool _RequestExit = false;
-
         //Delay in milliseconds
         public int RedrawDelay { get; set; } = 17;
-
-
         public GameBoard GameBoard { get; private set; }
-
         public GameLoop(GameBoard gameBoard)
         {
             this.GameBoard = gameBoard;
         }
-        public void CreateThread()
+        public Thread CreateThread()
         {
-            _Thread = new Thread(OnRedraw);
+            return new Thread(OnRedraw);
         }
         public void Start()
         {
             Active = true;
-            CreateThread();
-            _Thread.Start();
             GameBoard.StartPlayer();
+            _Thread = CreateThread();
+            _Thread.Start();
         }
         public void Stop()
         {
@@ -49,5 +45,7 @@ namespace ConsoleApplication
         {
 
         }
+
+ 
     }
 }
