@@ -11,9 +11,24 @@ namespace ConsoleApplication
     public class GameBoard
     {
         private Object _lock = new Object();
-        public PlayerDirection CurrentDirection { get; set; } = PlayerDirection.NONE;
+        
+        public PlayerDirection CurrentDirection { get
+        {
+            return _CurrentDirection;
+        } set
+        {
+            if( value == _CurrentDirection && this.PlayerSpeed > 25){
+                //Speed Up
+                this.PlayerSpeed -= 25;
+                _StartPlayerTimer();
+            }
+            _CurrentDirection = value;
+        }
+         } 
         public int UserSpeed { get; set; }
         System.Threading.Timer Timer;
+        private PlayerDirection _CurrentDirection = PlayerDirection.NONE;
+
         //public Point DotPosition { get; set; } = new Point() { X = 0, Y = 0 };
         public List<Point> SnakeBody { get; set; } = new List<Point>();
         private Stack<Point> ErasePos { get; set; }
@@ -37,18 +52,26 @@ namespace ConsoleApplication
             ErasePos = new Stack<Point>();
         }
 
+        int PlayerSpeed;
         public void StartPlayer(int userSpeedMS = 250)
         {
+            
+            SnakeBody = new List<Point>();
+            SnakeBody.Add(new Point() { X = 4, Y = 4 });
+            SnakeBody.Add(new Point() { X = 5, Y = 4 });
+            SnakeBody.Add(new Point() { X = 6, Y = 4 });
+            
+            PlayerSpeed = userSpeedMS;
+            _StartPlayerTimer();
+        }
+
+        private void _StartPlayerTimer(){
             if (Timer != null)
             {
                 Timer.Dispose();
                 Timer = null;
             }
-            SnakeBody = new List<Point>();
-            SnakeBody.Add(new Point() { X = 4, Y = 4 });
-            SnakeBody.Add(new Point() { X = 5, Y = 4 });
-            SnakeBody.Add(new Point() { X = 6, Y = 4 });
-            Timer = new System.Threading.Timer(PlayerTimerCallback, null, 0, userSpeedMS);
+            Timer = new System.Threading.Timer(PlayerTimerCallback, null, 0, PlayerSpeed);
         }
 
         private void MoveSnake(PlayerDirection direction, bool grow = false)
