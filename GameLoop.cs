@@ -1,4 +1,5 @@
 
+using System;
 using System.Threading;
 
 namespace ConsoleApplication
@@ -20,6 +21,7 @@ namespace ConsoleApplication
         }
         public void Start()
         {
+            Console.Clear();
             Active = true;
             GameBoard.StartPlayer();
             _Thread = CreateThread();

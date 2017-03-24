@@ -101,6 +101,7 @@ namespace ConsoleApplication
         {
             lock (_lock)
             {
+                if( SnakeBody.Count == 0 ){return;}
                 if ((Environment.TickCount - LasTimeMoved) > PlayerSpeed)
                 {
                     MoveSnake(CurrentDirection, SnakeBody.Count < 50);
