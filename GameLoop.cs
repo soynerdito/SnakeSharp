@@ -16,7 +16,7 @@ namespace ConsoleApplication
         }
         public Thread CreateThread()
         {
-            return new Thread(OnRedraw);
+            return new Thread(OnDrawThread);
         }
         public void Start()
         {
@@ -31,7 +31,7 @@ namespace ConsoleApplication
         }
         public bool Active { get; private set; } = false;
 
-        private void OnRedraw(object obj)
+        private void OnDrawThread(object obj)
         {
             while (!_RequestExit)
             {
@@ -39,13 +39,6 @@ namespace ConsoleApplication
                 Thread.Sleep(RedrawDelay);
             }
             Active = false;
-        }
-
-        public void OnDraw()
-        {
-
-        }
-
- 
+        } 
     }
 }
