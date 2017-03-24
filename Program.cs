@@ -20,11 +20,10 @@ namespace ConsoleApplication
             }
             set
             {
-                if (value == _CurrentDirection && this.PlayerSpeed > 25)
+                if (value == _CurrentDirection && this.PlayerSpeed > 15)
                 {
                     //Speed Up
-                    this.PlayerSpeed -= 25;
-                    //_StartPlayerTimer();
+                    this.PlayerSpeed -= 15;
                 }
                 _CurrentDirection = value;
             }
@@ -32,8 +31,6 @@ namespace ConsoleApplication
         public int UserSpeed { get; set; }
         System.Threading.Timer Timer;
         private PlayerDirection _CurrentDirection = PlayerDirection.NONE;
-
-        //public Point DotPosition { get; set; } = new Point() { X = 0, Y = 0 };
         public List<Point> SnakeBody { get; set; } = new List<Point>();
         private Stack<Point> ErasePos { get; set; }
 
@@ -103,8 +100,9 @@ namespace ConsoleApplication
         public void OnDraw()
         {
             lock (_lock)
-            {      
-                if( (Environment.TickCount - LasTimeMoved) > PlayerSpeed ){
+            {
+                if ((Environment.TickCount - LasTimeMoved) > PlayerSpeed)
+                {
                     MoveSnake(CurrentDirection, SnakeBody.Count < 50);
                     LasTimeMoved = Environment.TickCount;
                 }
@@ -116,7 +114,7 @@ namespace ConsoleApplication
                 foreach (var dot in SnakeBody)
                 {
                     Console.SetCursorPosition(dot.X, dot.Y);
-                    Console.Write('*' );
+                    Console.Write('*');
                 }
             }
         }
@@ -162,6 +160,9 @@ namespace ConsoleApplication
         }
     }
 
+    /*
+        Launch ConsoleApplication. (Entry point)
+     */
     public class Program
     {
         public static void Main(string[] args)
@@ -172,6 +173,7 @@ namespace ConsoleApplication
             ConsoleKeyInfo keyInfo;
             //Game loop
             Console.Clear();
+            //Loop to handle Key inputs
             while (gameLoop.Active)
             {
                 keyInfo = Console.ReadKey(true);
@@ -179,7 +181,7 @@ namespace ConsoleApplication
                 {
                     gameLoop.Stop();
                     break;
-                }                
+                }
                 gameBoad.OnKeyPress(keyInfo);
             }
             Console.CursorVisible = true;
