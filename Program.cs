@@ -4,6 +4,13 @@ using System.Linq;
 
 namespace ConsoleApplication
 {
+    public class CrashException : Exception
+    {
+        public CrashException(string message) : base(message)
+        {
+        }
+    }
+
     public enum PlayerDirection
     {
         UP, DOWN, LEFT, RIGHT, NONE
@@ -81,8 +88,12 @@ namespace ConsoleApplication
                         newPoint = MovePoint(newPoint, 1, 0);
                         break;
                 }
-                if (newPoint != null)
+                if (newPoint != null )
                 {
+                    //Validate Collition
+                    if( direction != PlayerDirection.NONE && SnakeBody.Where(x=> x.X == newPoint.X && x.Y == newPoint.Y).FirstOrDefault()!=null ){
+                        throw new CrashException("chocaste");
+                    }
                     if (!grow)
                     {
                         var remove = GetSnakeTail();
@@ -175,6 +186,7 @@ namespace ConsoleApplication
             while (gameLoop.Active)
             {
                 keyInfo = Console.ReadKey(true);
+                if( !gameLoop.Active){break;}
                 if (keyInfo.Key == ConsoleKey.Escape)
                 {
                     gameLoop.Stop();

@@ -37,8 +37,14 @@ namespace ConsoleApplication
         {
             while (!_RequestExit)
             {
-                GameBoard.Redraw();
-                Thread.Sleep(RedrawDelay);
+                try{
+                    GameBoard.Redraw();
+                    Thread.Sleep(RedrawDelay);
+                }catch(CrashException){
+                    _RequestExit = true;
+                    Console.SetCursorPosition(1,10);
+                    Console.Write("Perdiste");
+                }
             }
             Active = false;
         } 
