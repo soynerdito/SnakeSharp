@@ -88,10 +88,11 @@ namespace ConsoleApplication
                         newPoint = MovePoint(newPoint, 1, 0);
                         break;
                 }
-                if (newPoint != null )
+                if (newPoint != null)
                 {
                     //Validate Collition
-                    if( direction != PlayerDirection.NONE && SnakeBody.Where(x=> x.X == newPoint.X && x.Y == newPoint.Y).FirstOrDefault()!=null ){
+                    if (direction != PlayerDirection.NONE && SnakeBody.Where(x => x.X == newPoint.X && x.Y == newPoint.Y).FirstOrDefault() != null)
+                    {
                         throw new CrashException("chocaste");
                     }
                     if (!grow)
@@ -109,7 +110,7 @@ namespace ConsoleApplication
         {
             lock (_lock)
             {
-                if( SnakeBody.Count == 0 ){return;}
+                if (SnakeBody.Count == 0) { return; }
                 if ((Environment.TickCount - LasTimeMoved) > PlayerSpeed)
                 {
                     MoveSnake(CurrentDirection, SnakeBody.Count < 50);
@@ -181,21 +182,35 @@ namespace ConsoleApplication
             gameLoop.Start();
             ConsoleKeyInfo keyInfo;
             //Game loop
-            Console.Clear();
+            Console.Clear();            
             //Loop to handle Key inputs
-            while (gameLoop.Active)
+            //while (gameLoop.Active)
+            while (true)
             {
                 keyInfo = Console.ReadKey(true);
-                if( !gameLoop.Active){break;}
+                if (!gameLoop.Active)
+                {
+                    if( Char.ToUpper(keyInfo.KeyChar) =='Y' ){
+                        gameBoad = new GameBoard(80, 24);
+                        gameLoop = new GameLoop(gameBoad);
+                        gameLoop.Start();                        
+                    }else if( Char.ToUpper(keyInfo.KeyChar) == 'N' ){
+                        //exit
+                        break;
+                    }
+                }
                 if (keyInfo.Key == ConsoleKey.Escape)
                 {
                     gameLoop.Stop();
+                    //exit
                     break;
                 }
-                gameBoad.OnKeyPress(keyInfo);
+                if (gameLoop.Active){
+                    gameBoad.OnKeyPress(keyInfo);
+                }
             }
             Console.CursorVisible = true;
-            Console.SetCursorPosition(0, 0);
+            Console.SetCursorPosition(0, 0);            
             Console.Clear();
         }
     }

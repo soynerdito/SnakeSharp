@@ -42,8 +42,18 @@ namespace ConsoleApplication
                     Thread.Sleep(RedrawDelay);
                 }catch(CrashException){
                     _RequestExit = true;
-                    Console.SetCursorPosition(1,10);
-                    Console.Write("Perdiste");
+                    Console.Clear();
+                    int yPos = 5;
+                    Console.SetCursorPosition(5,yPos++);
+                    Console.WriteLine(" _____________________");
+                    Console.SetCursorPosition(5,yPos++);
+                    Console.WriteLine("/                     \\");
+                    Console.SetCursorPosition(5,yPos++);
+                    Console.WriteLine("| Yo loose, try again |");
+                    Console.SetCursorPosition(5,yPos++);
+                    Console.WriteLine("\\_____________________/");
+                    Console.SetCursorPosition(5,yPos++);
+                    Console.WriteLine("\n\n Retry [Y/N]?");
                 }
             }
             Active = false;
